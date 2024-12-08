@@ -1,0 +1,76 @@
+@page "/test"
+@rendermode InteractiveServer
+@implements IDisposable
+
+<PageTitle>Test</PageTitle>
+
+<h1>Test</h1>
+
+<p>
+    <input type="number" @bind="a" />
+</p>
+<p>
+    <input type="number" @bind="b" />
+</p>
+<p>
+    Sum: @c
+</p>
+
+<p>
+    Current time: @CurrentTime
+</p>
+
+<p>
+    <input type="text" @bind="InputText" @bind:event="oninput" />
+</p>
+<p>
+    Your Input: @InputText
+</p>
+
+<p>
+    <select @bind="SelectedValue">
+        @foreach (var item in MyDict)
+        {
+            <option value="@item.Key">@item.Value</option>
+        }
+    </select>
+</p>
+
+@code {
+    private string InputText { get; set; } = "";
+    private int a = 0;
+    private int b = 0;
+    private int c => a + b;
+    public DateTime CurrentTime { get; set; } = DateTime.Now;
+
+    private Dictionary<string, string> MyDict = new Dictionary<string, string>() { { "key1", "value1" }, { "key2", "value2"
+},
+{"key3", "value3"} };
+    private string SelectedValue { get; set; } = "";
+
+    private System.Timers.Timer timer = new System.Timers.Timer(1000);
+
+    public void UpdateDateTime()
+    {
+        CurrentTime = DateTime.Now;
+    }
+    protected override void OnInitialized()
+    {
+        SelectedValue = MyDict.First().Key;
+        timer.Elapsed += (sender, e) =>
+        {
+            InvokeAsync(() =>
+    {
+    UpdateDateTime();
+    StateHasChanged();
+            });
+        };
+        timer.Start();
+        Console.WriteLine("OnInitialized");
+    }
+    public void Dispose()
+    {
+        timer.Dispose();
+        Console.WriteLine("Dispose");
+    }
+}
