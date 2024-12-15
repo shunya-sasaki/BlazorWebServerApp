@@ -1,0 +1,39 @@
+@page "/execute"
+@rendermode InteractiveServer
+
+<PageTitle>Execute</PageTitle>
+
+<h1>Execute</h1>
+
+<div class="d-flex align-items-center py-4">
+    <div>
+        Host:
+    </div>
+    <input type="text" @bind="HostName" />
+</div>
+
+<div class="d-flex align-items-center py-4">
+    <div>
+        Port:
+    </div>
+    <input type="text" @bind="Port" />
+</div>
+
+<div class="d-flex align-items-center">
+    <button class="btn btn-primary" @onclick="ExecuteApi">Execute</button>
+    <div class="mx-4 pl-4 align-middle fw-bold ">Result:</div>
+    <div class="mx-4">@Result</div>
+</div>
+
+@code {
+    private string HostName { get; set; } = "localhost";
+    private int Port { get; set; } = 8000;
+    private string Result { get; set; } = "";
+    private void ExecuteApi()
+    {
+        // call the API http://localhost:8000/execute
+        HttpClient client = new HttpClient();
+        var response = client.GetAsync($"http://{HostName}:{Port}/execute").Result;
+        Result = response.Content.ReadAsStringAsync().Result;
+    }
+}
